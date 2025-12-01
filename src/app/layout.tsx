@@ -39,7 +39,7 @@ const RootLayout = ({
     children: React.ReactNode;
 }>) => {
     return (
-        <html lang="en" data-theme="dark">
+        <html lang="en" suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${figtree.variable} antialiased`}
             >

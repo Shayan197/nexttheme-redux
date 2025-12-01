@@ -3,36 +3,19 @@
 import { ReactNode, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import store from '@/store/store';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { ThemeProvider, useTheme } from 'next-themes';
 import { setTheme } from '@/store/slices/themeSlice';
 import type { ThemeName } from '@/types/theme';
 
-// Top-level component inside provider to sync theme (client-only)
-const ThemeSyncer = () => {
-    const dispatch = useAppDispatch();
-    const theme = useAppSelector((s) => s.theme.theme);
-
-    // On mount: read stored value and apply
+// Small helper to keep redux in sync with next-themes
+const ThemeSyncToRedux = () => {
+    const { theme, systemTheme, resolvedTheme } = useTheme();
+    // resolvedTheme will be 'light' | 'dark' once useTheme is ready
     useEffect(() => {
-        const stored = (typeof window !== 'undefined' &&
-            localStorage.getItem('theme')) as ThemeName | null;
-        if (stored) {
-            dispatch(setTheme(stored));
-            document.documentElement.setAttribute('data-theme', stored);
-        } else {
-            // ensure document attribute matches initial store
-            document.documentElement.setAttribute('data-theme', theme);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch]);
-
-    // Whenever theme in store changes (toggle), sync DOM + localStorage
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
+        if (!resolvedTheme) return;
+        const t = resolvedTheme as ThemeName;
+        store.dispatch(setTheme(t));
+    }, [resolvedTheme]);
     return null;
 };
 
@@ -43,8 +26,15 @@ interface ProvidersProps {
 const Providers = ({ children }: ProvidersProps) => {
     return (
         <Provider store={store}>
-            <ThemeSyncer />
-            {children}
+            {/*
+attribute="data-theme" ensures next-themes toggles `data-theme` on <html>
+defaultTheme="dark" ensures first-time users see dark.
+enableSystem={false} -> do not auto-follow OS. Set true if you want system preference.
+*/}
+            <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
+                <ThemeSyncToRedux />
+                {children}
+            </ThemeProvider>
         </Provider>
     );
 };
