@@ -1,4 +1,3 @@
-// eslint.config.js
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
@@ -21,7 +20,18 @@ const eslintConfig = [
     prettierConfig,
     {
         files: ['src/**/*.ts', 'src/**/*.tsx'],
-        ignores: ['node_modules/**', '.next/**', 'dist/**', 'eslint.config.mjs'],
+        ignores: [
+            'node_modules/**',
+            '.next/**',
+            'dist/**',
+            'eslint.config.mjs',
+            'out/**',
+            'build/**',
+            'next-env.d.ts',
+            '.vscode/**',
+            'public/**',
+            'scripts/**',
+        ],
         languageOptions: {
             parser: tsParser,
             parserOptions: {
@@ -53,7 +63,6 @@ const eslintConfig = [
         rules: {
             // Formatting
             'prettier/prettier': ['error'],
-            indent: ['error', 4, { SwitchCase: 1 }],
             'func-style': ['error', 'expression', { allowArrowFunctions: true }],
 
             // Naming Conventions
