@@ -1,55 +1,83 @@
 @import 'tailwindcss';
 
+/* =========================================
+Design Tokens (Base / Default Theme)
+========================================= */
+
 :root {
-    --brandDark: #de5e91;
-    --brandLight: #de5e70;
-    /* #070708; */
-    --background: #111111;
-    --foreground: #ffffff;
-    --foreground-secondary: #aaaaaa;
+    /* Brand Colors */
+    --color-primary-dark: #de5e91;
+    --color-primary-light: #de5e70;
+
+    /* Surface & Text Colors */
+    --color-background: #000000;
+    --color-foreground-primary: #ffffff;
+    --color-foreground-secondary: #aaaaaa;
+    --color-surface-footer: #070708;
 }
+
+/* =========================================
+Dark Theme Override
+========================================= */
+
 [data-theme='dark'] {
-    --brandDark: #de5e91;
-    --background: #111111;
-    --foreground: #ffffff;
-    --foreground-secondary: #aaaaaa;
+    --color-primary-dark: #de5e91;
+    --color-background: #000000;
+    --color-foreground-primary: #ffffffe6;
+    --color-foreground-secondary: #ffffff66;
+    --color-surface-footer: #070708;
 }
+
+/* =========================================
+Light Theme Override
+========================================= */
 
 [data-theme='light'] {
-    --brandLight: #de5e70;
-    --background: #ffffff;
-    --foreground: #333333;
-    --foreground-secondary: #757575;
+    --color-primary-light: #de5e70;
+    --color-background: #ffffff;
+    --color-foreground-primary: #333333;
+    --color-foreground-secondary: #757575;
+    --color-surface-footer: #fafafa;
 }
 
-@layer components {
-    .bg-app {
-        background: var(--background);
-    }
-
-    .text-app {
-        color: var(--foreground);
-    }
-
-    .text-app-secondary {
-        color: var(--foreground-secondary);
-    }
-}
+/* =========================================
+Tailwind Token Mapping
+========================================= */
 
 @theme inline {
-    --text-hMain: 32px;
-    --text-hSub: 24px;
-    --text-hsub-2: 20px;
-    --text-body: 16px;
-    --text-caption: 14px;
+    --color-primary-dark: var(--color-primary-dark);
+    --color-primary-light: var(--color-primary-light);
+    --color-background: var(--color-background);
+    --color-foreground-primary: var(--color-foreground-primary);
+    --color-foreground-secondary: var(--color-foreground-secondary);
+    --color-surface-footer: var(--color-surface-footer);
 
+    /* Typography Scale */
+    --text-heading-xl: 36px;
+    --text-heading-lg: 32px;
+    --text-heading-md: 28px;
+    --text-heading-sm: 24px;
+
+    --text-body-lg: 18px;
+    --text-body-md: 16px;
+    --text-body-sm: 14px;
+
+    --text-caption-lg: 13px;
+    --text-caption-md: 12px;
+    --text-caption-sm: 11px;
+
+    /* Font Families */
     --font-sans: var(--font-geist-sans), sans-serif;
     --font-mono: var(--font-geist-mono), monospace;
     --font-poppins: var(--font-poppins), sans-serif;
     --font-figtree: var(--font-figtree), sans-serif;
 }
 
+/* =========================================
+Base Styles
+========================================= */
+
 body {
-    font-family: Poppins;
-    background-color: var(--background);
+    font-family: var(--font-figtree);
+    background-color: var(--color-background);
 }

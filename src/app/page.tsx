@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const Home = (): React.JSX.Element => {

@@ -1,15 +1,15 @@
 'use client';
 
+import { ThemeProvider, useTheme } from 'next-themes';
 import { ReactNode, useEffect } from 'react';
 import { Provider } from 'react-redux';
-import store from '@/store/store';
-import { ThemeProvider, useTheme } from 'next-themes';
+import store from '@/store';
 import { setTheme } from '@/store/slices/themeSlice';
 import type { ThemeName } from '@/types/theme';
 
 // Small helper to keep redux in sync with next-themes
 const ThemeSyncToRedux = () => {
-    const { theme, systemTheme, resolvedTheme } = useTheme();
+    const { resolvedTheme } = useTheme();
     // resolvedTheme will be 'light' | 'dark' once useTheme is ready
     useEffect(() => {
         if (!resolvedTheme) return;

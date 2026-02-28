@@ -1,37 +1,44 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
+// eslint.config.js
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
+import prettierPlugin from 'eslint-plugin-prettier'; // Adds "prettier/prettier" rule
+import prettierConfig from 'eslint-config-prettier/flat'; // Disables ESLint rules conflicting with Prettier
 import tsParser from '@typescript-eslint/parser';
-import prettierConfig from 'eslint-config-prettier';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import reactPlugin from 'eslint-plugin-react';
 import importPlugin from 'eslint-plugin-import';
-import prettierPlugin from 'eslint-plugin-prettier';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-});
+export default defineConfig([
+    // 🔹 Next.js Core Web Vitals + TypeScript rules
+    ...nextVitals,
+    ...nextTs,
+    prettierConfig, // Spread Prettier config to disable conflicting rules
 
-const eslintConfig = [
-    js.configs.recommended,
-    ...compat.extends('next/core-web-vitals'),
-    prettierConfig,
     {
-        files: ['src/**/*.ts', 'src/**/*.tsx'],
-        ignores: [
-            'node_modules/**',
-            '.next/**',
-            'dist/**',
-            'eslint.config.mjs',
-            'out/**',
-            'build/**',
-            'next-env.d.ts',
-            '.vscode/**',
-            'public/**',
-            'scripts/**',
-        ],
+        plugins: {
+            import: importPlugin,
+            react: reactPlugin,
+            '@typescript-eslint': tsPlugin,
+            prettier: prettierPlugin, // Enables "prettier/prettier" rule
+        },
+
+        settings: {
+            // 🟦 Auto import resolver + aliases
+            'import/resolver': {
+                typescript: {
+                    project: './tsconfig.json',
+                },
+                alias: {
+                    map: [['@', './src']],
+                    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+                },
+            },
+        },
+
+        // 🟩 Target files
+        files: ['src/**/*.{ts,tsx,js,jsx}'],
+
         languageOptions: {
             parser: tsParser,
             parserOptions: {
@@ -44,28 +51,18 @@ const eslintConfig = [
                 },
             },
         },
-        plugins: {
-            import: importPlugin,
-            '@typescript-eslint': tsPlugin,
-            prettier: prettierPlugin,
-        },
-        settings: {
-            'import/resolver': {
-                typescript: {
-                    project: './tsconfig.json',
-                },
-                alias: {
-                    map: [['@', './src']],
-                    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-                },
-            },
-        },
+
+        /* ------------------------------------------
+         *  ⭐ PRETTIER + FORMAT RULES
+         * ------------------------------------------ */
         rules: {
-            // Formatting
-            'prettier/prettier': ['error'],
+            'prettier/prettier': 'error',
+            indent: ['error', 4, { SwitchCase: 1 }],
             'func-style': ['error', 'expression', { allowArrowFunctions: true }],
 
-            // Naming Conventions
+            /* ------------------------------------------
+             *  ⭐ TYPE-SCRIPT NAMING RULES
+             * ------------------------------------------ */
             '@typescript-eslint/naming-convention': [
                 'error',
                 {
@@ -76,7 +73,7 @@ const eslintConfig = [
                 {
                     selector: 'variable',
                     modifiers: ['const'],
-                    format: ['camelCase', 'UPPER_CASE'],
+                    format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
                     leadingUnderscore: 'allow',
                 },
                 {
@@ -94,8 +91,9 @@ const eslintConfig = [
                 },
             ],
 
-            // React
-            'react/jsx-uses-react': 'off', // Not needed in React 17+
+            /* ------------------------------------------
+             * ⭐ REACT RULES (optimized for Next.js)
+             * ------------------------------------------ */
             'react/jsx-uses-vars': 'error',
             'react/jsx-pascal-case': 'error',
             'react/function-component-definition': [
@@ -106,14 +104,18 @@ const eslintConfig = [
                 },
             ],
 
-            // Console and unused
+            /* ------------------------------------------
+             * ⭐ CLEAN CODE RULES
+             * ------------------------------------------ */
             'no-console': 'warn',
             'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
             'no-var': 'error',
 
-            // Import Order
-            'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+            /* ------------------------------------------
+             * ⭐ IMPORT RULES
+             * ------------------------------------------ */
             'import/no-unresolved': 'error',
+            'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
             'import/order': [
                 'error',
                 {
@@ -126,6 +128,6 @@ const eslintConfig = [
             ],
         },
     },
-];
-
-export default eslintConfig;
+    // 🟥 Ignore directories
+    globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'node_modules/**']),
+]);
